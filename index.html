@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Manufatura - Formula SAE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js e plugin de datalabels -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .tab-button {
+            padding: 0.75rem 1rem;
+            border-bottom: 4px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .tab-button.active {
+            border-bottom-color: #3b82f6; /* blue-500 */
+            color: #1e3a8a; /* blue-800 */
+            font-weight: 700;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .table-header {
+            background-color: #f9fafb; /* gray-50 */
+        }
+        .table-cell {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e5e7eb; /* gray-200 */
+        }
+        .flow-diagram-box {
+            border: 2px solid #e5e7eb;
+            background-color: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            height: 100%;
+        }
+        .flow-diagram-list li {
+            background-color: #ffffff;
+            border-left: 4px solid;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            border-radius: 0.25rem;
+        }
+        .area-label {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+        }
+        .facility-icon {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            border: 1px solid rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Cabeçalho -->
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="py-4">
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Dashboard de Manufatura</h1>
+                <p class="text-md sm:text-lg text-gray-600">Análise de Custos e Processos - Formula SAE</p>
+            </div>
+            <!-- Navegação por Abas -->
+            <nav class="flex border-b border-gray-200 overflow-x-auto -mb-px">
+                <button class="tab-button active" onclick="showTab('home')">Início</button>
+                <button class="tab-button" onclick="showTab('factory_layout')">Layout da Fábrica</button>
+                <button class="tab-button" onclick="showTab('factory_infra')">Infraestrutura</button>
+                <button class="tab-button" onclick="showTab('factory_costs')">Custos Operacionais</button>
+                <button class="tab-button" onclick="showTab('chassis')">Chassi</button>
+                <button class="tab-button" onclick="showTab('suspension')">Suspensão</button>
+                <button class="tab-button" onclick="showTab('drivetrain')">Transmissão</button>
+                <button class="tab-button" onclick="showTab('powertrain')">Motor</button>
+                <button class="tab-button" onclick="showTab('aero')">Aerodinâmica</button>
+                <button class="tab-button" onclick="showTab('brakes')">Freios & Ergonomia</button>
+                <button class="tab-button" onclick="showTab('electrical')">Elétrica</button>
+                <button class="tab-button" onclick="showTab('cost_summary')">Resumo de Custos</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Seção: Início -->
+        <div id="home" class="content-section active">
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-bold text-gray-900">Projeto de Manufatura em Larga Escala: Protótipo FR-10</h2>
+                <p class="mt-2 text-lg text-blue-700 font-semibold">Uma iniciativa da FEB RACING - UNESP Bauru</p>
+                <div class="mt-4 text-gray-700 space-y-4">
+                    <p>Este dashboard apresenta um estudo de viabilidade completo para a produção em série do protótipo FR-10, desenvolvido pela equipa FEB RACING. A finalidade deste projeto é demonstrar a nossa capacidade de transitar de um ambiente de prototipagem para uma operação de manufatura industrial, eficiente e economicamente sustentável.</p>
+                    <p>Analisamos cada sistema do veículo sob a ótica da produção em larga escala, com foco em automação, repetibilidade e controlo de custos. As secções seguintes detalham os processos, investimentos e custos operacionais necessários para transformar o FR-10 num produto comercializável, mantendo os mais altos padrões de qualidade e performance.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Layout da Fábrica -->
+        <div id="factory_layout" class="content-section">
+             <div class="w-full bg-white p-6 rounded-xl shadow-lg">
+                <h1 class="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-2">Planta Esquemática da Fábrica (Layout em Blocos)</h1>
+                <p class="text-center text-gray-600 mb-8">Disposição dos blocos funcionais e áreas de apoio.</p>
+                <div class="bg-green-100 p-4 rounded-lg border-2 border-green-300">
+                    <div class="grid grid-cols-3 grid-rows-3 gap-4 h-[400px] md:h-[600px] relative">
+                        <!-- Área de Estacionamento -->
+                        <div class="col-span-1 row-span-3 bg-gray-300 rounded-lg flex items-center justify-center">
+                            <span class="text-gray-700 font-bold text-lg md:text-2xl area-label">Estacionamento</span>
+                        </div>
+                        <!-- Bloco Principal de Trabalho -->
+                        <div class="col-span-2 row-span-2 bg-red-200 rounded-lg flex items-center justify-center p-4 relative">
+                            <span class="text-red-800 font-bold text-lg md:text-2xl text-center">Bloco de Trabalho Bruto<br><span class="text-sm md:text-lg font-medium">(Produção & Maquinaria)</span></span>
+                            <!-- Ícones de Banheiro e Bebedouro -->
+                            <div class="facility-icon bg-gray-600" style="top: 10px; left: 10px;">WC</div>
+                            <div class="facility-icon bg-blue-500" style="top: 40px; left: 10px;">B</div>
+                            <div class="facility-icon bg-gray-600" style="bottom: 10px; left: 10px;">WC</div>
+                            <div class="facility-icon bg-blue-500" style="bottom: 40px; left: 10px;">B</div>
+                            <div class="facility-icon bg-gray-600" style="top: 10px; right: 10px;">WC</div>
+                            <div class="facility-icon bg-blue-500" style="top: 40px; right: 10px;">B</div>
+                            <div class="facility-icon bg-gray-600" style="bottom: 10px; right: 10px;">WC</div>
+                            <div class="facility-icon bg-blue-500" style="bottom: 40px; right: 10px;">B</div>
+                            <div class="facility-icon bg-gray-600" style="top: 50%; left: 10px; transform: translateY(-50%);">WC</div>
+                            <div class="facility-icon bg-blue-500" style="top: 50%; left: 40px; transform: translateY(-50%);">B</div>
+                             <div class="facility-icon bg-gray-600" style="top: 50%; right: 10px; transform: translateY(-50%);">WC</div>
+                            <div class="facility-icon bg-blue-500" style="top: 50%; right: 40px; transform: translateY(-50%);">B</div>
+                        </div>
+                        <!-- Blocos de Apoio -->
+                        <div class="col-span-2 row-span-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-yellow-300 rounded-lg flex items-center justify-center p-2">
+                                <span class="text-yellow-900 font-bold text-center text-sm md:text-base">Bloco de Armazenamento</span>
+                            </div>
+                            <div class="bg-blue-200 rounded-lg flex items-center justify-center p-2 relative">
+                                <span class="text-blue-800 font-bold text-center text-sm md:text-base">Bloco do Restaurante</span>
+                                <div class="facility-icon bg-gray-600" style="top: 5px; left: 5px;">WC</div>
+                                <div class="facility-icon bg-blue-500" style="top: 5px; right: 5px;">B</div>
+                                <div class="facility-icon bg-gray-600" style="bottom: 5px; left: 5px;">WC</div>
+                                <div class="facility-icon bg-blue-500" style="bottom: 5px; right: 5px;">B</div>
+                            </div>
+                            <div class="bg-purple-200 rounded-lg flex items-center justify-center p-2 relative">
+                                <span class="text-purple-800 font-bold text-center text-sm md:text-base">Bloco de Descanso</span>
+                                <div class="facility-icon bg-gray-600" style="top: 5px; left: 5px;">WC</div>
+                                <div class="facility-icon bg-blue-500" style="top: 5px; right: 5px;">B</div>
+                                <div class="facility-icon bg-gray-600" style="bottom: 5px; left: 5px;">WC</div>
+                                <div class="facility-icon bg-blue-500" style="bottom: 5px; right: 5px;">B</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Legenda -->
+                <div class="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs justify-center">
+                    <div class="flex items-center"><div class="w-4 h-4 rounded-full bg-red-200 mr-2"></div><span>Bloco de Trabalho</span></div>
+                    <div class="flex items-center"><div class="w-4 h-4 rounded-full bg-yellow-300 mr-2"></div><span>Armazenamento</span></div>
+                    <div class="flex items-center"><div class="w-4 h-4 rounded-full bg-blue-200 mr-2"></div><span>Restaurante</span></div>
+                    <div class="flex items-center"><div class="w-4 h-4 rounded-full bg-purple-200 mr-2"></div><span>Descanso</span></div>
+                    <div class="flex items-center"><div class="w-4 h-4 rounded-full bg-gray-300 mr-2"></div><span>Estacionamento</span></div>
+                    <div class="flex items-center"><div class="w-4 h-4 rounded-full bg-gray-600 mr-2"></div><span>WC (Casa de Banho)</span></div>
+                    <div class="flex items-center"><div class="w-4 h-4 rounded-full bg-blue-500 mr-2"></div><span>B (Bebedouro)</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Infraestrutura da Fábrica -->
+        <div id="factory_infra" class="content-section">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-lg space-y-6">
+                    <h2 class="text-xl font-bold border-b pb-2">Estimativa de Quadro de Funcionários</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm">
+                            <thead class="table-header">
+                                <tr>
+                                    <th class="table-cell">Departamento</th>
+                                    <th class="table-cell">Função</th>
+                                    <th class="table-cell text-center">Quantidade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="table-cell font-semibold" rowspan="2">Produção</td>
+                                    <td class="table-cell">Operador de CNC / Robótica</td>
+                                    <td class="table-cell text-center">10</td>
+                                </tr>
+                                <tr>
+                                    <td class="table-cell">Montador / Soldador</td>
+                                    <td class="table-cell text-center">22</td>
+                                </tr>
+                                <tr>
+                                    <td class="table-cell font-semibold" rowspan="2">Qualidade & Manutenção</td>
+                                    <td class="table-cell">Técnico de Qualidade</td>
+                                    <td class="table-cell text-center">4</td>
+                                </tr>
+                                <tr>
+                                    <td class="table-cell">Técnico de Manutenção</td>
+                                    <td class="table-cell text-center">4</td>
+                                </tr>
+                                <tr>
+                                    <td class="table-cell font-semibold">Logística</td>
+                                    <td class="table-cell">Operador de Logística</td>
+                                    <td class="table-cell text-center">2</td>
+                                </tr>
+                                <tr>
+                                    <td class="table-cell font-semibold">Engenharia & Gestão</td>
+                                    <td class="table-cell">Engenheiro / Gestor</td>
+                                    <td class="table-cell text-center">5</td>
+                                </tr>
+                                <tr class="table-header font-bold text-base">
+                                    <td class="table-cell" colspan="2">TOTAL DE FUNCIONÁRIOS</td>
+                                    <td class="table-cell text-center">47</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg space-y-6">
+                    <h2 class="text-xl font-bold border-b pb-2">Infraestrutura e Bem-Estar</h2>
+                    <div>
+                        <h3 class="font-bold text-lg">Restaurante</h3>
+                        <ul class="text-sm mt-2 space-y-1">
+                            <li><span class="font-semibold">Custo por refeição (pago ao fornecedor):</span> R$ 25,00</li>
+                            <li><span class="font-semibold">Custo mensal por funcionário (22 dias):</span> R$ 550,00</li>
+                            <li><span class="font-semibold">Desconto em folha (pago pelo funcionário):</span> R$ 35,00 por mês</li>
+                            <li><span class="font-semibold">Custo total mensal para a empresa (subsídio):</span> ~R$ 24.205,00</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg">Ambiente de Trabalho e Descanso</h3>
+                        <ul class="text-sm mt-2 space-y-1 list-disc list-inside text-gray-700">
+                            <li>Salas de descanso climatizadas com sofás, puffs e jogos.</li>
+                            <li>Sistema de exaustão industrial em toda a área de produção.</li>
+                            <li>**Casas de Banho:** 10 conjuntos (masculino/feminino) distribuídos estrategicamente: 2 no restaurante, 2 nas áreas de descanso e 6 na área de produção.</li>
+                            <li>**Bebedouros:** 10 unidades com água filtrada, seguindo a mesma lógica de distribuição das casas de banho para fácil acesso.</li>
+                            <li>Vestiários completos para homens e mulheres.</li>
+                        </ul>
+                    </div>
+                     <div class="bg-white rounded-xl">
+                        <h3 class="font-bold text-lg mb-4">Custos de Utilidades (Apoio)</h3>
+                        <canvas id="infraUtilitiesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Custos Operacionais -->
+        <div id="factory_costs" class="content-section">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-bold mb-4">Custos Operacionais da Fábrica</h2>
+                    <p class="text-sm text-gray-600 mb-4">Estimativas baseadas na produção de 300 unidades/ano (25 unidades/mês).</p>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm">
+                            <thead class="table-header">
+                                <tr>
+                                    <th class="table-cell">Categoria</th>
+                                    <th class="table-cell text-right">Custo por Protótipo</th>
+                                    <th class="table-cell text-right">Custo Mensal Estimado</th>
+                                    <th class="table-cell text-right">Custo Anual Estimado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="table-cell">Energia Elétrica (Produção + Apoio)</td>
+                                    <td class="table-cell text-right font-semibold">BRL 774.21</td>
+                                    <td class="table-cell text-right font-semibold">BRL 19,355.25</td>
+                                    <td class="table-cell text-right font-semibold">BRL 232,263.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="table-cell">Consumíveis</td>
+                                    <td class="table-cell text-right font-semibold">BRL 460.00</td>
+                                    <td class="table-cell text-right font-semibold">BRL 11,500.00</td>
+                                    <td class="table-cell text-right font-semibold">BRL 138,000.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="table-cell">Água</td>
+                                    <td class="table-cell text-right font-semibold">BRL 37.22</td>
+                                    <td class="table-cell text-right font-semibold">BRL 930.60</td>
+                                    <td class="table-cell text-right font-semibold">BRL 11,167.20</td>
+                                </tr>
+                                <tr class="table-header font-bold text-base">
+                                    <td class="table-cell">TOTAIS</td>
+                                    <td class="table-cell text-right">BRL 1,271.43</td>
+                                    <td class="table-cell text-right">BRL 31,785.85</td>
+                                    <td class="table-cell text-right">BRL 381,430.20</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                     <div class="bg-white rounded-xl mt-8 p-6">
+                        <h3 class="font-bold text-lg mb-4">Principais Consumíveis da Fábrica</h3>
+                        <ul class="text-sm grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2 list-disc list-inside text-gray-700">
+                            <li>Gases de solda (Argônio)</li>
+                            <li>Fluidos de corte para CNC</li>
+                            <li>Lixas e abrasivos</li>
+                            <li>EPIs (luvas, máscaras, etc.)</li>
+                            <li>Óleos e lubrificantes</li>
+                            <li>Materiais de limpeza</li>
+                            <li>Fitas e adesivos</li>
+                            <li>Lâminas de serra</li>
+                            <li>Eletrodos de solda</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg space-y-8">
+                    <div>
+                        <h2 class="text-xl font-bold mb-4 text-center">Investimento de Capital (Equipamentos)</h2>
+                        <canvas id="totalInvestmentChart"></canvas>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold mb-4 text-center">Distribuição dos Custos Operacionais</h2>
+                        <canvas id="factoryCostChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Chassi -->
+        <div id="chassis" class="content-section">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-3 space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Análise de Custo - Chassi</h2>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead class="table-header"><tr><th class="table-cell">Categoria</th><th class="table-cell text-right">Custo Estimado</th></tr></thead>
+                                <tbody>
+                                    <tr><td class="table-cell">Matéria-Prima (Aço 1020)</td><td class="table-cell text-right font-semibold">BRL 869.95</td></tr>
+                                    <tr><td class="table-cell">Mão de Obra Direta</td><td class="table-cell text-right font-semibold">BRL 765.00</td></tr>
+                                    <tr><td class="table-cell">Consumíveis</td><td class="table-cell text-right font-semibold">BRL 350.00</td></tr>
+                                    <tr><td class="table-cell">Energia Elétrica</td><td class="table-cell text-right font-semibold">BRL 100.30</td></tr>
+                                    <tr class="table-header font-bold text-base"><td class="table-cell">CUSTO TOTAL</td><td class="table-cell text-right">BRL 2,085.25</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Descrição do Processo de Manufatura</h2>
+                        <ul class="text-sm list-disc list-inside space-y-1 text-gray-700">
+                            <li>Os tubos de aço 1020 são cortados e entalhados em máquina a laser.</li>
+                            <li>A soldagem é realizada em um gabarito de aço de alta precisão por um robô de solda.</li>
+                            <li>O processo garante alta repetibilidade e qualidade estrutural.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Fluxo de Manufatura - Chassi</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">1. Preparação</h3><ul class="flow-diagram-list"><li class="border-cyan-500">Corte a Laser</li><li class="border-cyan-500">Dobra de Tubos</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">2. Gabarito</h3><ul class="flow-diagram-list"><li class="border-amber-500">Fabricação do Gabarito de Aço</li><li class="border-amber-500">Calibração</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">3. Montagem</h3><ul class="flow-diagram-list"><li class="border-purple-500">Posicionamento</li><li class="border-purple-500">Solda Robotizada</li><li class="border-purple-500">Inspeção</li></ul></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-bold mb-4 text-center">Distribuição de Custos - Chassi</h2>
+                    <canvas id="chassisCostChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Suspensão -->
+        <div id="suspension" class="content-section">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-3 space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Análise de Custo - Suspensão</h2>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead class="table-header"><tr><th class="table-cell">Categoria</th><th class="table-cell text-right">Custo Estimado</th></tr></thead>
+                                <tbody>
+                                    <tr><td class="table-cell">Peças Comerciais</td><td class="table-cell text-right font-semibold">BRL 2,500.00</td></tr>
+                                    <tr><td class="table-cell">Matérias-Primas</td><td class="table-cell text-right font-semibold">BRL 805.00</td></tr>
+                                    <tr><td class="table-cell">Mão de Obra Direta</td><td class="table-cell text-right font-semibold">BRL 500.00</td></tr>
+                                    <tr><td class="table-cell">Energia Elétrica</td><td class="table-cell text-right font-semibold">BRL 97.00</td></tr>
+                                    <tr class="table-header font-bold text-base"><td class="table-cell">CUSTO TOTAL</td><td class="table-cell text-right">BRL 3,902.00</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Descrição do Processo de Manufatura</h2>
+                        <ul class="text-sm list-disc list-inside space-y-1 text-gray-700">
+                            <li>Montantes em alumínio 7075-T6 são usinados em centro CNC de 5 eixos.</li>
+                            <li>Bandejas em aço 4130 são soldadas por robôs em gabaritos dedicados.</li>
+                            <li>Molas são fabricadas internamente e montadas com amortecedores comerciais.</li>
+                            <li>A integração final ao chassi utiliza gabaritos e alinhamento a laser para garantir a geometria.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Fluxo de Manufatura - Suspensão</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">1. Produção de Componentes</h3><ul class="flow-diagram-list"><li class="border-cyan-500">Usinagem de Bandejas e Montantes</li><li class="border-cyan-500">Fabricação de Molas</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">2. Sub-montagem</h3><ul class="flow-diagram-list"><li class="border-violet-500">Solda Robotizada das Bandejas</li><li class="border-violet-500">Montagem de Amortecedores</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">3. Integração ao Chassi</h3><ul class="flow-diagram-list"><li class="border-orange-500">Gabaritagem no Chassi</li><li class="border-orange-500">Solda dos Suportes</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">4. Finalização</h3><ul class="flow-diagram-list"><li class="border-green-500">Alinhamento a Laser</li><li class="border-green-500">Inspeção de Qualidade</li></ul></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-bold mb-4 text-center">Distribuição de Custos - Suspensão</h2>
+                    <canvas id="suspensionCostChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seção: Transmissão -->
+        <div id="drivetrain" class="content-section">
+             <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-3 space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Análise de Custo - Transmissão</h2>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead class="table-header"><tr><th class="table-cell">Categoria</th><th class="table-cell text-right">Custo Estimado</th></tr></thead>
+                                <tbody>
+                                    <tr><td class="table-cell">Matérias-Primas e Peças Comerciais</td><td class="table-cell text-right font-semibold">BRL 2,220.00</td></tr>
+                                    <tr><td class="table-cell">Mão de Obra Direta</td><td class="table-cell text-right font-semibold">BRL 541.25</td></tr>
+                                    <tr><td class="table-cell">Energia Elétrica</td><td class="table-cell text-right font-semibold">BRL 128.35</td></tr>
+                                    <tr class="table-header font-bold text-base"><td class="table-cell">CUSTO TOTAL</td><td class="table-cell text-right">BRL 2,889.60</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Descrição do Processo de Manufatura</h2>
+                        <ul class="text-sm list-disc list-inside space-y-1 text-gray-700">
+                            <li>Componentes de alumínio (cubos, suportes) e aço (eixos, tulipas) são usinados em centros CNC.</li>
+                            <li>Estriados internos de alta precisão são criados com uma máquina de eletroerosão a fio.</li>
+                            <li>Peças de aço passam por tratamento térmico de cementação em fornos automatizados.</li>
+                            <li>A qualidade dimensional é verificada por uma máquina de medição por coordenadas (CMM).</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Fluxo de Manufatura - Transmissão</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">1. Usinagem</h3><ul class="flow-diagram-list"><li class="border-slate-500">CNC (Alumínio/Aço)</li><li class="border-slate-500">Eletroerosão (Estriados)</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">2. Acabamento</h3><ul class="flow-diagram-list"><li class="border-red-500">Trat. Térmico</li><li class="border-red-500">Retífica</li><li class="border-red-500">Inspeção CMM</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">3. Sub-montagem</h3><ul class="flow-diagram-list"><li class="border-amber-500">Diferencial</li><li class="border-amber-500">Juntas/Cubos</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">4. Montagem Final</h3><ul class="flow-diagram-list"><li class="border-green-500">Integração</li><li class="border-green-500">Teste de Rotação</li></ul></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-bold mb-4 text-center">Distribuição de Custos - Transmissão</h2>
+                    <canvas id="drivetrainCostChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Motor -->
+        <div id="powertrain" class="content-section">
+             <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-3 space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Análise de Custo - Subsistemas do Motor</h2>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead class="table-header"><tr><th class="table-cell">Categoria</th><th class="table-cell text-right">Custo Estimado</th></tr></thead>
+                                <tbody>
+                                    <tr><td class="table-cell">Matérias-Primas</td><td class="table-cell text-right font-semibold">BRL 520.00</td></tr>
+                                    <tr><td class="table-cell">Mão de Obra Direta</td><td class="table-cell text-right font-semibold">BRL 106.00</td></tr>
+                                    <tr><td class="table-cell">Energia Elétrica</td><td class="table-cell text-right font-semibold">BRL 65.00</td></tr>
+                                    <tr class="table-header font-bold text-base"><td class="table-cell">CUSTO TOTAL</td><td class="table-cell text-right">BRL 691.00</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Descrição do Processo de Manufatura</h2>
+                        <ul class="text-sm list-disc list-inside space-y-1 text-gray-700">
+                            <li>O sistema de admissão é produzido por moldagem por injeção de plástico para alta velocidade e baixo custo.</li>
+                            <li>Tubos de escape são conformados por dobradeiras CNC e soldados por robôs para garantir consistência.</li>
+                            <li>Os subsistemas são pré-montados em módulos (arrefecimento, combustível, etc.) fora da linha principal.</li>
+                            <li>AGVs (Veículos Guiados Automatizados) entregam os módulos à linha, onde robôs fazem a instalação final.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Fluxo de Manufatura - Motor</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">1. Produção Paralela</h3><ul class="flow-diagram-list"><li class="border-rose-500">Admissão</li><li class="border-rose-500">Combustível</li><li class="border-rose-500">Arrefecimento</li><li class="border-rose-500">Escape</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">2. Montagem Modular</h3><ul class="flow-diagram-list"><li class="border-orange-500">Kits de Módulos</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">3. Integração</h3><ul class="flow-diagram-list"><li class="border-lime-500">Entrega por AGV</li><li class="border-lime-500">Instalação Robótica</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">4. Teste Final</h3><ul class="flow-diagram-list"><li class="border-sky-500">Teste de Fluídos</li><li class="border-sky-500">Checagem de Sensores</li></ul></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-bold mb-4 text-center">Distribuição de Custos - Motor</h2>
+                    <canvas id="powertrainCostChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Aerodinâmica -->
+        <div id="aero" class="content-section">
+             <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-3 space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Análise de Custo - Aerodinâmica</h2>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead class="table-header"><tr><th class="table-cell">Categoria</th><th class="table-cell text-right">Custo Estimado</th></tr></thead>
+                                <tbody>
+                                    <tr><td class="table-cell">Matérias-Primas</td><td class="table-cell text-right font-semibold">BRL 7,500.00</td></tr>
+                                    <tr><td class="table-cell">Mão de Obra Direta</td><td class="table-cell text-right font-semibold">BRL 1,245.00</td></tr>
+                                    <tr><td class="table-cell">Energia Elétrica</td><td class="table-cell text-right font-semibold">BRL 220.00</td></tr>
+                                    <tr><td class="table-cell">Consumíveis</td><td class="table-cell text-right font-semibold">BRL 30.00</td></tr>
+                                    <tr class="table-header font-bold text-base"><td class="table-cell">CUSTO TOTAL</td><td class="table-cell text-right">BRL 8,995.00</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Descrição do Processo de Manufatura</h2>
+                        <ul class="text-sm list-disc list-inside space-y-1 text-gray-700">
+                            <li>Moldes de alumínio 7075-T6 são usinados em CNC para garantir precisão e durabilidade.</li>
+                            <li>Peças são laminadas com fibra de carbono pré-impregnada (Pre-preg) em sala limpa.</li>
+                            <li>A cura ocorre em autoclave com controle de pressão e temperatura para máxima qualidade.</li>
+                            <li>Furos de montagem são feitos com gabaritos para garantir a intercambialidade.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Fluxo de Manufatura - Aerodinâmica</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">1. Moldes</h3><ul class="flow-diagram-list"><li class="border-gray-500">Usinagem CNC</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">2. Produção</h3><ul class="flow-diagram-list"><li class="border-cyan-500">Laminação</li><li class="border-cyan-500">Cura em Autoclave</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">3. Acabamento</h3><ul class="flow-diagram-list"><li class="border-purple-500">Desmoldagem</li><li class="border-purple-500">Furação</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">4. Montagem</h3><ul class="flow-diagram-list"><li class="border-emerald-500">Inspeção Final</li></ul></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-bold mb-4 text-center">Distribuição de Custos - Aerodinâmica</h2>
+                    <canvas id="aeroCostChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Freios & Ergonomia -->
+        <div id="brakes" class="content-section">
+             <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-3 space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Análise de Custo - Freios & Ergonomia</h2>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead class="table-header"><tr><th class="table-cell">Categoria</th><th class="table-cell text-right">Custo Estimado</th></tr></thead>
+                                <tbody>
+                                    <tr><td class="table-cell">Matérias-Primas</td><td class="table-cell text-right font-semibold">BRL 520.00</td></tr>
+                                    <tr><td class="table-cell">Mão de Obra Direta</td><td class="table-cell text-right font-semibold">BRL 317.50</td></tr>
+                                    <tr><td class="table-cell">Terceirização</td><td class="table-cell text-right font-semibold">BRL 40.00</td></tr>
+                                    <tr><td class="table-cell">Energia Elétrica</td><td class="table-cell text-right font-semibold">BRL 34.00</td></tr>
+                                    <tr class="table-header font-bold text-base"><td class="table-cell">CUSTO TOTAL</td><td class="table-cell text-right">BRL 911.50</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Descrição do Processo de Manufatura</h2>
+                        <ul class="text-sm list-disc list-inside space-y-1 text-gray-700">
+                            <li>Pinças de freio são usinadas em CNC de 5 eixos a partir de alumínio 7075-T6.</li>
+                            <li>A caixa de pedais é fabricada com corte a laser e dobra CNC, com montagem de componentes em bancada.</li>
+                            <li>Linhas de freio são montadas com prensa hidráulica e 100% testadas contra vazamentos.</li>
+                            <li>O banco é laminado em fibra de vidro a partir de um molde fabricado internamente.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Fluxo de Manufatura - Freios & Ergonomia</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">1. Produção Paralela</h3><ul class="flow-diagram-list"><li class="border-blue-500">Usinagem</li><li class="border-blue-500">Hidráulica</li><li class="border-blue-500">Ergonomia</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">2. Acabamento</h3><ul class="flow-diagram-list"><li class="border-purple-500">Trat. Superfície</li><li class="border-purple-500">Montagem Pinças</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">3. Teste Final</h3><ul class="flow-diagram-list"><li class="border-emerald-500">Teste de Pressão</li><li class="border-emerald-500">Checagem Funcional</li></ul></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-bold mb-4 text-center">Distribuição de Custos - Freios & Ergonomia</h2>
+                    <canvas id="brakesCostChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Elétrica -->
+        <div id="electrical" class="content-section">
+             <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-3 space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Análise de Custo - Elétrica</h2>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead class="table-header"><tr><th class="table-cell">Categoria</th><th class="table-cell text-right">Custo Estimado</th></tr></thead>
+                                <tbody>
+                                    <tr><td class="table-cell">Matérias-Primas</td><td class="table-cell text-right font-semibold">BRL 2,000.00</td></tr>
+                                    <tr><td class="table-cell">Mão de Obra Direta</td><td class="table-cell text-right font-semibold">BRL 312.50</td></tr>
+                                    <tr><td class="table-cell">Energia Elétrica</td><td class="table-cell text-right font-semibold">BRL 10.20</td></tr>
+                                    <tr><td class="table-cell">Consumíveis</td><td class="table-cell text-right font-semibold">BRL 80.00</td></tr>
+                                    <tr class="table-header font-bold text-base"><td class="table-cell">CUSTO TOTAL</td><td class="table-cell text-right">BRL 2,402.70</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Descrição do Processo de Manufatura</h2>
+                        <ul class="text-sm list-disc list-inside space-y-1 text-gray-700">
+                            <li>Fios são cortados, decapados e marcados automaticamente por uma máquina processadora.</li>
+                            <li>Terminais são crimpados por uma prensa automática com monitoramento de força.</li>
+                            <li>A montagem do chicote é feita em gabaritos (formboards) com assistência de robôs para tarefas repetitivas.</li>
+                            <li>100% dos chicotes passam por um teste de continuidade elétrica automatizado.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold mb-4">Fluxo de Manufatura - Elétrica</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">1. Preparação</h3><ul class="flow-diagram-list"><li class="border-sky-500">Corte/Decape</li><li class="border-sky-500">Crimpagem</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">2. Montagem</h3><ul class="flow-diagram-list"><li class="border-indigo-500">Formboard</li><li class="border-indigo-500">Encapsulamento</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">3. QC</h3><ul class="flow-diagram-list"><li class="border-teal-500">Teste Elétrico</li><li class="border-teal-500">Inspeção Visual</li></ul></div>
+                            <div class="flow-diagram-box"><h3 class="font-bold text-center mb-2">4. Instalação</h3><ul class="flow-diagram-list"><li class="border-slate-500">Instalação no Carro</li></ul></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-bold mb-4 text-center">Distribuição de Custos - Elétrica</h2>
+                    <canvas id="electricalCostChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Resumo de Custos -->
+        <div id="cost_summary" class="content-section">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                 <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-bold mb-4 text-center">Custo Total por Protótipo (por Sistema)</h2>
+                    <canvas id="totalPrototypeCostChart2"></canvas>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-bold mb-4 text-center">Custo Total por Protótipo (por Categoria)</h2>
+                    <canvas id="totalBreakdownChart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg mt-8">
+                <h2 class="text-xl font-bold mb-4 text-center">Projeção de Custos Totais da Empresa</h2>
+                 <canvas id="annualCostChart"></canvas>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="text-center py-8 text-gray-500 text-sm">
+        <p>Dashboard de Análise de Manufatura | FEB RACING</p>
+    </footer>
+
+    <script>
+        // --- Lógica para as Abas ---
+        function showTab(tabName) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => {
+                button.classList.remove('active');
+                if (button.getAttribute('onclick') === `showTab('${tabName}')`) {
+                    button.classList.add('active');
+                }
+            });
+        }
+
+        // --- Lógica para os Gráficos ---
+        document.addEventListener('DOMContentLoaded', function() {
+            Chart.register(ChartDataLabels);
+            
+            const barChartOptions = {
+                indexAxis: 'y',
+                responsive: true,
+                 plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                         callbacks: {
+                            label: function(context) {
+                                return ` ${context.label}: BRL ${context.parsed.x.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                            }
+                        }
+                    },
+                    datalabels: { display: false }
+                 }
+            };
+            
+            const componentBarChartOptions = {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed.x;
+                                const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return ` ${label}: BRL ${value.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    datalabels: { 
+                        anchor: 'end',
+                        align: 'end',
+                        color: '#4b5563',
+                        font: {
+                            weight: 'bold'
+                        },
+                        formatter: (value) => `BRL ${value.toFixed(2)}`
+                    }
+                }
+            };
+            
+            // Função para criar um gráfico de forma segura
+            function createChart(elementId, config) {
+                const element = document.getElementById(elementId);
+                if (element && element.getContext('2d')) {
+                    const existingChart = Chart.getChart(element);
+                    if (existingChart) {
+                        existingChart.destroy();
+                    }
+                    new Chart(element, config);
+                }
+            }
+
+            // Gráfico: Custo Total do Protótipo (Página Inicial e Resumo)
+            const prototypeCostData = {
+                labels: ['Aero', 'Suspensão', 'Transmissão', 'Elétrica', 'Chassi', 'Freios', 'Motor'],
+                datasets: [{
+                    label: 'Custo por Sistema',
+                    data: [8995.00, 3902.00, 2889.60, 2402.70, 2085.25, 911.50, 691.00],
+                    backgroundColor: ['#ef4444', '#a855f7', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6']
+                }]
+            };
+            createChart('totalPrototypeCostChart', { type: 'bar', data: prototypeCostData, options: barChartOptions });
+            createChart('totalPrototypeCostChart2', { type: 'bar', data: prototypeCostData, options: barChartOptions });
+            
+            // Gráfico: Custo Total por Categoria (Resumo)
+            const totalBreakdownData = {
+                labels: ['Matérias-Primas & Peças', 'Mão de Obra', 'Consumíveis', 'Energia', 'Água'],
+                 datasets: [{
+                    label: 'Custo por Categoria',
+                    data: [16974.95, 3787.25, 460.00, 774.21, 37.22],
+                    backgroundColor: ['#10b981', '#3b82f6', '#f97316', '#f59e0b', '#0ea5e9']
+                }]
+            };
+            createChart('totalBreakdownChart', { type: 'bar', data: totalBreakdownData, options: componentBarChartOptions });
+
+            // Gráfico: Projeção de Custos da Empresa (Resumo)
+            const annualCostData = {
+                labels: ['Mensal', 'Semestral', 'Anual'],
+                 datasets: [{
+                    label: 'Custo Total da Empresa',
+                    data: [578712.10, 3472272.60, 6944545.20],
+                    backgroundColor: ['#22c55e', '#f97316', '#ef4444']
+                }]
+            };
+            createChart('annualCostChart', { type: 'bar', data: annualCostData, options: barChartOptions });
+
+
+            // Gráfico: Investimento Total (Custos Operacionais)
+            createChart('totalInvestmentChart', {
+                type: 'bar',
+                data: {
+                    labels: ['Motor', 'Transmissão', 'Suspensão', 'Freios', 'Aero', 'Elétrica', 'Chassi'],
+                    datasets: [{
+                        label: 'Investimento por Área',
+                        data: [1950520.00, 1430000.00, 1230000.00, 683000.00, 450000.00, 410000.00, 160682.50],
+                        backgroundColor: ['#8b5cf6', '#f97316', '#a855f7', '#3b82f6', '#ef4444', '#eab308', '#22c55e']
+                    }]
+                },
+                options: barChartOptions
+            });
+
+            // Gráfico: Custos de Utilidades (Infraestrutura)
+             createChart('infraUtilitiesChart', {
+                type: 'bar',
+                data: {
+                    labels: ['Energia (Apoio)', 'Água'],
+                    datasets: [{ data: [2992.00, 930.00], backgroundColor: ['#f59e0b', '#3b82f6'] }]
+                },
+                options: componentBarChartOptions
+            });
+
+            // Gráfico: Custos da Fábrica
+            createChart('factoryCostChart', {
+                type: 'bar',
+                data: {
+                    labels: ['Energia Elétrica', 'Consumíveis', 'Água'],
+                    datasets: [{ data: [19355.25, 11500.00, 930.60], backgroundColor: ['#f59e0b', '#f97316', '#3b82f6'] }]
+                },
+                options: componentBarChartOptions
+            });
+
+            // Gráfico: Custos do Chassi
+            createChart('chassisCostChart', {
+                type: 'bar',
+                data: {
+                    labels: ['Mão de Obra', 'Matéria-Prima', 'Consumíveis', 'Energia'],
+                    datasets: [{ data: [765.00, 869.95, 350.00, 100.30], backgroundColor: ['#3b82f6', '#10b981', '#f97316', '#f59e0b'] }]
+                },
+                options: componentBarChartOptions
+            });
+
+            // Gráfico: Custos da Suspensão
+            createChart('suspensionCostChart', {
+                type: 'bar',
+                data: {
+                    labels: ['Peças Comerciais', 'Matérias-Primas', 'Mão de Obra', 'Energia'],
+                    datasets: [{ data: [2500.00, 805.00, 500.00, 97.00], backgroundColor: ['#6b7280', '#10b981', '#3b82f6', '#f59e0b'] }]
+                },
+                options: componentBarChartOptions
+            });
+            
+            // Gráfico: Custos da Transmissão
+            createChart('drivetrainCostChart', {
+                type: 'bar',
+                data: {
+                    labels: ['Materiais & Peças', 'Mão de Obra', 'Energia'],
+                    datasets: [{ data: [2220.00, 541.25, 128.35], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'] }]
+                },
+                options: componentBarChartOptions
+            });
+
+            // Gráfico: Custos do Motor
+            createChart('powertrainCostChart', {
+                type: 'bar',
+                data: {
+                    labels: ['Matéria-Prima', 'Mão de Obra', 'Energia'],
+                    datasets: [{ data: [520.00, 106.00, 65.00], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'] }]
+                },
+                options: componentBarChartOptions
+            });
+            
+            // Gráfico: Custos da Aerodinâmica
+            createChart('aeroCostChart', {
+                type: 'bar',
+                data: {
+                    labels: ['Matéria-Prima', 'Mão de Obra', 'Energia', 'Consumíveis'],
+                    datasets: [{ data: [7500.00, 1245.00, 220.00, 30.00], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#f97316'] }]
+                },
+                options: componentBarChartOptions
+            });
+
+            // Gráfico: Custos de Freios & Ergonomia
+            createChart('brakesCostChart', {
+                type: 'bar',
+                data: {
+                    labels: ['Matéria-Prima', 'Mão de Obra', 'Terceirização', 'Energia'],
+                    datasets: [{ data: [520.00, 317.50, 40.00, 34.00], backgroundColor: ['#10b981', '#3b82f6', '#6b7280', '#f59e0b'] }]
+                },
+                options: componentBarChartOptions
+            });
+
+            // Gráfico: Custos da Elétrica
+            createChart('electricalCostChart', {
+                type: 'bar',
+                data: {
+                    labels: ['Matéria-Prima', 'Mão de Obra', 'Consumíveis', 'Energia'],
+                    datasets: [{ data: [2000.00, 312.50, 80.00, 10.20], backgroundColor: ['#10b981', '#3b82f6', '#f97316', '#f59e0b'] }]
+                },
+                options: componentBarChartOptions
+            });
+
+        });
+    </script>
+</body>
+</html>
