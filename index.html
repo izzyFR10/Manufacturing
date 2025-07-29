@@ -896,6 +896,8 @@
     </footer>
 
     <script>
+        const chartInstances = {};
+
         // --- Lógica para as Abas ---
         function showTab(tabName, clickedElement = null) {
             document.querySelectorAll('.content-section').forEach(section => {
@@ -913,8 +915,10 @@
             let parentButton;
             if (clickedElement && clickedElement.closest('.relative')) {
                 parentButton = clickedElement.closest('.relative').querySelector('.tab-button');
+            } else if(clickedElement) {
+                parentButton = clickedElement;
             } else {
-                parentButton = Array.from(document.querySelectorAll('.tab-button')).find(
+                 parentButton = Array.from(document.querySelectorAll('.tab-button')).find(
                     btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`showTab('${tabName}')`)
                 );
             }
@@ -925,12 +929,17 @@
             document.querySelectorAll('[id$="-dropdown-menu"]').forEach(menu => {
                 menu.classList.add('hidden');
             });
+            
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu) {
+                mobileMenu.classList.add('hidden');
+            }
+
+            initializeChartsForTab(tabName);
         }
 
         // --- Lógica para os Gráficos ---
-        document.addEventListener('DOMContentLoaded', function() {
-            Chart.register(ChartDataLabels);
-            
+        function initializeChartsForTab(tabName) {
             const barChartOptions = {
                 indexAxis: 'y',
                 responsive: true,
@@ -974,178 +983,96 @@
                     }
                 }
             };
-            
-            // Função para criar um gráfico de forma segura
+
             function createChart(elementId, config) {
+                if (chartInstances[elementId]) {
+                    return; // Gráfico já inicializado
+                }
                 const element = document.getElementById(elementId);
                 if (element && element.getContext('2d')) {
-                    const existingChart = Chart.getChart(element);
-                    if (existingChart) {
-                        existingChart.destroy();
-                    }
-                    new Chart(element, config);
+                    chartInstances[elementId] = new Chart(element, config);
                 }
             }
 
-            // Gráfico: Custo Total do Protótipo (Página Inicial e Resumo)
-            const prototypeCostData = {
-                labels: ['Aero', 'Suspensão', 'Transmissão', 'Elétrica', 'Chassi', 'Freios', 'Motor'],
-                datasets: [{
-                    label: 'Custo por Sistema',
-                    data: [8995.00, 3902.00, 2889.60, 2402.70, 2085.25, 911.50, 691.00],
-                    backgroundColor: ['#ef4444', '#a855f7', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6']
-                }]
-            };
-            createChart('totalPrototypeCostChart', { type: 'bar', data: prototypeCostData, options: barChartOptions });
-            createChart('totalPrototypeCostChart2', { type: 'bar', data: prototypeCostData, options: barChartOptions });
-            
-            // Gráfico: Custo Total por Categoria (Resumo)
-            const totalBreakdownData = {
-                labels: ['Matérias-Primas & Peças', 'Mão de Obra', 'Consumíveis', 'Energia', 'Água'],
-                 datasets: [{
-                    label: 'Custo por Categoria',
-                    data: [16974.95, 3787.25, 460.00, 774.21, 37.22],
-                    backgroundColor: ['#10b981', '#3b82f6', '#f97316', '#f59e0b', '#0ea5e9']
-                }]
-            };
-            createChart('totalBreakdownChart', { type: 'bar', data: totalBreakdownData, options: componentBarChartOptions });
+            switch(tabName) {
+                case 'home':
+                    // Não há gráficos na home
+                    break;
+                case 'factory_infra':
+                    createChart('infraUtilitiesChart', { type: 'bar', data: { labels: ['Subsídio Restaurante', 'Energia (Apoio)', 'Água'], datasets: [{ data: [24205.00, 2992.00, 930.00], backgroundColor: ['#10b981', '#f59e0b', '#3b82f6'] }] }, options: componentBarChartOptions });
+                    break;
+                case 'factory_costs':
+                    createChart('totalInvestmentChart', { type: 'bar', data: { labels: ['Motor', 'Transmissão', 'Suspensão', 'Freios', 'Aero', 'Elétrica', 'Chassi'], datasets: [{ label: 'Investimento por Área', data: [1950520.00, 1430000.00, 1230000.00, 683000.00, 450000.00, 410000.00, 160682.50], backgroundColor: ['#8b5cf6', '#f97316', '#a855f7', '#3b82f6', '#ef4444', '#eab308', '#22c55e'] }] }, options: barChartOptions });
+                    createChart('factoryCostChart', { type: 'bar', data: { labels: ['Energia Elétrica', 'Consumíveis', 'Água'], datasets: [{ data: [19355.25, 11500.00, 930.60], backgroundColor: ['#f59e0b', '#f97316', '#3b82f6'] }] }, options: componentBarChartOptions });
+                    break;
+                case 'chassis':
+                    createChart('chassisCostChart', { type: 'bar', data: { labels: ['Mão de Obra', 'Matéria-Prima', 'Consumíveis', 'Energia'], datasets: [{ data: [765.00, 869.95, 350.00, 100.30], backgroundColor: ['#3b82f6', '#10b981', '#f97316', '#f59e0b'] }] }, options: componentBarChartOptions });
+                    break;
+                case 'suspension':
+                    createChart('suspensionCostChart', { type: 'bar', data: { labels: ['Peças Comerciais', 'Matérias-Primas', 'Mão de Obra', 'Energia'], datasets: [{ data: [2500.00, 805.00, 500.00, 97.00], backgroundColor: ['#6b7280', '#10b981', '#3b82f6', '#f59e0b'] }] }, options: componentBarChartOptions });
+                    break;
+                case 'drivetrain':
+                    createChart('drivetrainCostChart', { type: 'bar', data: { labels: ['Materiais & Peças', 'Mão de Obra', 'Energia'], datasets: [{ data: [2220.00, 541.25, 128.35], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'] }] }, options: componentBarChartOptions });
+                    break;
+                case 'powertrain':
+                    createChart('powertrainCostChart', { type: 'bar', data: { labels: ['Matéria-Prima', 'Mão de Obra', 'Energia'], datasets: [{ data: [520.00, 106.00, 65.00], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'] }] }, options: componentBarChartOptions });
+                    break;
+                case 'aero':
+                    createChart('aeroCostChart', { type: 'bar', data: { labels: ['Matéria-Prima', 'Mão de Obra', 'Energia', 'Consumíveis'], datasets: [{ data: [7500.00, 1245.00, 220.00, 30.00], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#f97316'] }] }, options: componentBarChartOptions });
+                    break;
+                case 'brakes':
+                    createChart('brakesCostChart', { type: 'bar', data: { labels: ['Matéria-Prima', 'Mão de Obra', 'Terceirização', 'Energia'], datasets: [{ data: [520.00, 317.50, 40.00, 34.00], backgroundColor: ['#10b981', '#3b82f6', '#6b7280', '#f59e0b'] }] }, options: componentBarChartOptions });
+                    break;
+                case 'electrical':
+                    createChart('electricalCostChart', { type: 'bar', data: { labels: ['Matéria-Prima', 'Mão de Obra', 'Consumíveis', 'Energia'], datasets: [{ data: [2000.00, 312.50, 80.00, 10.20], backgroundColor: ['#10b981', '#3b82f6', '#f97316', '#f59e0b'] }] }, options: componentBarChartOptions });
+                    break;
+                case 'cost_summary':
+                    const prototypeCostData = { labels: ['Aero', 'Suspensão', 'Transmissão', 'Elétrica', 'Chassi', 'Freios', 'Motor'], datasets: [{ label: 'Custo por Sistema', data: [8995.00, 3902.00, 2889.60, 2402.70, 2085.25, 911.50, 691.00], backgroundColor: ['#ef4444', '#a855f7', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6'] }] };
+                    createChart('totalPrototypeCostChart2', { type: 'bar', data: prototypeCostData, options: barChartOptions });
+                    const totalBreakdownData = { labels: ['Matérias-Primas & Peças', 'Mão de Obra', 'Consumíveis', 'Energia', 'Água'], datasets: [{ label: 'Custo por Categoria', data: [16974.95, 3787.25, 460.00, 774.21, 37.22], backgroundColor: ['#10b981', '#3b82f6', '#f97316', '#f59e0b', '#0ea5e9'] }] };
+                    createChart('totalBreakdownChart', { type: 'bar', data: totalBreakdownData, options: componentBarChartOptions });
+                    const annualCostData = { labels: ['Mensal', 'Semestral', 'Anual'], datasets: [{ label: 'Custo Total da Empresa', data: [549180.35, 3295082.1, 6590164.2], backgroundColor: ['#22c55e', '#f97316', '#ef4444'] }] };
+                    createChart('annualCostChart', { type: 'bar', data: annualCostData, options: barChartOptions });
+                    break;
+            }
+        }
+        
+        // Inicializa a primeira aba e seus gráficos
+        showTab('home', document.querySelector('.tab-button.active'));
 
-            // Gráfico: Projeção de Custos da Empresa (Resumo)
-            const annualCostData = {
-                labels: ['Mensal', 'Semestral', 'Anual'],
-                 datasets: [{
-                    label: 'Custo Total da Empresa',
-                    data: [549180.35, 3295082.1, 6590164.2], // Custo de 25 protótipos + custos operacionais mensais
-                    backgroundColor: ['#22c55e', '#f97316', '#ef4444']
-                }]
-            };
-            createChart('annualCostChart', { type: 'bar', data: annualCostData, options: barChartOptions });
-
-
-            // Gráfico: Investimento Total (Custos Operacionais)
-            createChart('totalInvestmentChart', {
-                type: 'bar',
-                data: {
-                    labels: ['Motor', 'Transmissão', 'Suspensão', 'Freios', 'Aero', 'Elétrica', 'Chassi'],
-                    datasets: [{
-                        label: 'Investimento por Área',
-                        data: [1950520.00, 1430000.00, 1230000.00, 683000.00, 450000.00, 410000.00, 160682.50],
-                        backgroundColor: ['#8b5cf6', '#f97316', '#a855f7', '#3b82f6', '#ef4444', '#eab308', '#22c55e']
-                    }]
-                },
-                options: barChartOptions
+        // Lógica dos menus suspensos e do menu mobile
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if(mobileMenuButton && mobileMenu){
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
             });
+        }
 
-            // Gráfico: Custos de Utilidades (Infraestrutura)
-             createChart('infraUtilitiesChart', {
-                type: 'bar',
-                data: {
-                    labels: ['Subsídio Restaurante', 'Energia (Apoio)', 'Água'],
-                    datasets: [{ data: [24205.00, 2992.00, 930.00], backgroundColor: ['#10b981', '#f59e0b', '#3b82f6'] }]
-                },
-                options: componentBarChartOptions
-            });
-
-            // Gráfico: Custos da Fábrica
-            createChart('factoryCostChart', {
-                type: 'bar',
-                data: {
-                    labels: ['Energia Elétrica', 'Consumíveis', 'Água'],
-                    datasets: [{ data: [19355.25, 11500.00, 930.60], backgroundColor: ['#f59e0b', '#f97316', '#3b82f6'] }]
-                },
-                options: componentBarChartOptions
-            });
-
-            // Gráfico: Custos do Chassi
-            createChart('chassisCostChart', {
-                type: 'bar',
-                data: {
-                    labels: ['Mão de Obra', 'Matéria-Prima', 'Consumíveis', 'Energia'],
-                    datasets: [{ data: [765.00, 869.95, 350.00, 100.30], backgroundColor: ['#3b82f6', '#10b981', '#f97316', '#f59e0b'] }]
-                },
-                options: componentBarChartOptions
-            });
-
-            // Gráfico: Custos da Suspensão
-            createChart('suspensionCostChart', {
-                type: 'bar',
-                data: {
-                    labels: ['Peças Comerciais', 'Matérias-Primas', 'Mão de Obra', 'Energia'],
-                    datasets: [{ data: [2500.00, 805.00, 500.00, 97.00], backgroundColor: ['#6b7280', '#10b981', '#3b82f6', '#f59e0b'] }]
-                },
-                options: componentBarChartOptions
-            });
-            
-            // Gráfico: Custos da Transmissão
-            createChart('drivetrainCostChart', {
-                type: 'bar',
-                data: {
-                    labels: ['Materiais & Peças', 'Mão de Obra', 'Energia'],
-                    datasets: [{ data: [2220.00, 541.25, 128.35], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'] }]
-                },
-                options: componentBarChartOptions
-            });
-
-            // Gráfico: Custos do Motor
-            createChart('powertrainCostChart', {
-                type: 'bar',
-                data: {
-                    labels: ['Matéria-Prima', 'Mão de Obra', 'Energia'],
-                    datasets: [{ data: [520.00, 106.00, 65.00], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'] }]
-                },
-                options: componentBarChartOptions
-            });
-            
-            // Gráfico: Custos da Aerodinâmica
-            createChart('aeroCostChart', {
-                type: 'bar',
-                data: {
-                    labels: ['Matéria-Prima', 'Mão de Obra', 'Energia', 'Consumíveis'],
-                    datasets: [{ data: [7500.00, 1245.00, 220.00, 30.00], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#f97316'] }]
-                },
-                options: componentBarChartOptions
-            });
-
-            // Gráfico: Custos de Freios & Ergonomia
-            createChart('brakesCostChart', {
-                type: 'bar',
-                data: {
-                    labels: ['Matéria-Prima', 'Mão de Obra', 'Terceirização', 'Energia'],
-                    datasets: [{ data: [520.00, 317.50, 40.00, 34.00], backgroundColor: ['#10b981', '#3b82f6', '#6b7280', '#f59e0b'] }]
-                },
-                options: componentBarChartOptions
-            });
-
-            // Gráfico: Custos da Elétrica
-            createChart('electricalCostChart', {
-                type: 'bar',
-                data: {
-                    labels: ['Matéria-Prima', 'Mão de Obra', 'Consumíveis', 'Energia'],
-                    datasets: [{ data: [2000.00, 312.50, 80.00, 10.20], backgroundColor: ['#10b981', '#3b82f6', '#f97316', '#f59e0b'] }]
-                },
-                options: componentBarChartOptions
-            });
-
-            // Lógica do botão suspenso
-            document.querySelectorAll('[data-dropdown-toggle]').forEach(button => {
-                const dropdownMenu = document.getElementById(button.dataset.dropdownToggle);
-                if (dropdownMenu) {
-                    button.addEventListener('click', function(event) {
-                        event.stopPropagation();
-                        dropdownMenu.classList.toggle('hidden');
+        document.querySelectorAll('[data-dropdown-toggle]').forEach(button => {
+            const dropdownMenu = document.getElementById(button.dataset.dropdownToggle);
+            if (dropdownMenu) {
+                button.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    document.querySelectorAll('[id$="-dropdown-menu"]').forEach(menu => {
+                        if(menu.id !== button.dataset.dropdownToggle) {
+                            menu.classList.add('hidden');
+                        }
                     });
+                    dropdownMenu.classList.toggle('hidden');
+                });
+            }
+        });
+
+        window.addEventListener('click', function(event) {
+            document.querySelectorAll('[id$="-dropdown-menu"]').forEach(menu => {
+                if (!menu.previousElementSibling.contains(event.target)) {
+                    menu.classList.add('hidden');
                 }
             });
-
-            window.addEventListener('click', function(event) {
-                document.querySelectorAll('[id$="-dropdown-menu"]').forEach(menu => {
-                    if (!menu.previousElementSibling.contains(event.target)) {
-                        menu.classList.add('hidden');
-                    }
-                });
-            });
-
         });
+
+    });
     </script>
 </body>
 </html>
