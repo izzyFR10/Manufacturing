@@ -105,7 +105,7 @@
             </div>
             <!-- Navegação por Abas para Desktop -->
             <nav id="desktop-nav" class="hidden md:flex flex-wrap gap-2 py-2">
-                <button class="tab-button active" onclick="showTab('home')">Início</button>
+                <button class="tab-button active" onclick="showTab('home', this)">Início</button>
                 
                 <div class="relative">
                     <button data-dropdown-toggle="factory-dropdown-menu-desktop" class="tab-button flex items-center gap-1">
@@ -113,9 +113,9 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div id="factory-dropdown-menu-desktop" class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20 hidden">
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('factory_layout')">Layout da Fábrica</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('factory_infra')">Infraestrutura</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('factory_costs')">Custos Operacionais</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('factory_layout', this)">Layout da Fábrica</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('factory_infra', this)">Infraestrutura</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('factory_costs', this)">Custos Operacionais</a>
                     </div>
                 </div>
 
@@ -125,19 +125,19 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div id="areas-dropdown-menu-desktop" class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20 hidden">
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('chassis')">Chassi</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('suspension')">Suspensão</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('drivetrain')">Transmissão</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('powertrain')">Motor</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('aero')">Aerodinâmica</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('brakes')">Freios & Ergonomia</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('electrical')">Elétrica</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('chassis', this)">Chassi</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('suspension', this)">Suspensão</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('drivetrain', this)">Transmissão</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('powertrain', this)">Motor</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('aero', this)">Aerodinâmica</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('brakes', this)">Freios & Ergonomia</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('electrical', this)">Elétrica</a>
                     </div>
                 </div>
-                <button class="tab-button" onclick="showTab('interchangeability')">Intercambialidade</button>
-                <button class="tab-button" onclick="showTab('quality')">Qualidade</button>
-                <button class="tab-button" onclick="showTab('user_manual')">Orientações Gerais</button>
-                <button class="tab-button" onclick="showTab('cost_summary')">Resumo de Custos</button>
+                <button class="tab-button" onclick="showTab('interchangeability', this)">Intercambialidade</button>
+                <button class="tab-button" onclick="showTab('quality', this)">Qualidade</button>
+                <button class="tab-button" onclick="showTab('user_manual', this)">Orientações Gerais</button>
+                <button class="tab-button" onclick="showTab('cost_summary', this)">Resumo de Custos</button>
             </nav>
         </div>
         <!-- Menu Mobile -->
@@ -908,7 +908,7 @@
                 targetSection.classList.add('active');
             }
 
-            document.querySelectorAll('.tab-button').forEach(button => {
+            document.querySelectorAll('#desktop-nav .tab-button').forEach(button => {
                 button.classList.remove('active');
             });
             
@@ -918,15 +918,15 @@
             } else if(clickedElement) {
                 parentButton = clickedElement;
             } else {
-                 parentButton = Array.from(document.querySelectorAll('.tab-button')).find(
-                    btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`showTab('${tabName}')`)
+                 parentButton = Array.from(document.querySelectorAll('#desktop-nav .tab-button')).find(
+                    btn => (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`showTab('${tabName}'`))
                 );
             }
              if (parentButton) {
                 parentButton.classList.add('active');
             }
 
-            document.querySelectorAll('[id$="-dropdown-menu"]').forEach(menu => {
+            document.querySelectorAll('[id$="-dropdown-menu-desktop"]').forEach(menu => {
                 menu.classList.add('hidden');
             });
             
@@ -1037,42 +1037,44 @@
             }
         }
         
-        // Inicializa a primeira aba e seus gráficos
-        showTab('home', document.querySelector('.tab-button.active'));
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializa a primeira aba e seus gráficos
+            showTab('home');
 
-        // Lógica dos menus
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        if(mobileMenuButton && mobileMenu){
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-        }
-
-        document.querySelectorAll('[data-dropdown-toggle]').forEach(button => {
-            const dropdownMenu = document.getElementById(button.dataset.dropdownToggle);
-            if (dropdownMenu) {
-                button.addEventListener('click', function(event) {
-                    event.stopPropagation();
-                    document.querySelectorAll('[id$="-dropdown-menu"]').forEach(menu => {
-                        if(menu.id !== button.dataset.dropdownToggle) {
-                            menu.classList.add('hidden');
-                        }
-                    });
-                    dropdownMenu.classList.toggle('hidden');
+            // Lógica dos menus
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if(mobileMenuButton && mobileMenu){
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
                 });
             }
-        });
 
-        window.addEventListener('click', function(event) {
-            document.querySelectorAll('[id$="-dropdown-menu"]').forEach(menu => {
-                if (!menu.previousElementSibling.contains(event.target)) {
-                    menu.classList.add('hidden');
+            document.querySelectorAll('[data-dropdown-toggle]').forEach(button => {
+                const dropdownMenu = document.getElementById(button.dataset.dropdownToggle);
+                if (dropdownMenu) {
+                    button.addEventListener('click', function(event) {
+                        event.stopPropagation();
+                        // Esconde outros menus
+                        document.querySelectorAll('[id$="-dropdown-menu-desktop"]').forEach(menu => {
+                            if(menu.id !== button.dataset.dropdownToggle) {
+                                menu.classList.add('hidden');
+                            }
+                        });
+                        dropdownMenu.classList.toggle('hidden');
+                    });
                 }
             });
-        });
 
-    });
+            window.addEventListener('click', function(event) {
+                document.querySelectorAll('[id$="-dropdown-menu-desktop"]').forEach(menu => {
+                    const button = document.querySelector(`[data-dropdown-toggle="${menu.id}"]`);
+                    if (button && !button.contains(event.target)) {
+                        menu.classList.add('hidden');
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>
