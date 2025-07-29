@@ -14,7 +14,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
+            background-color: #eff6ff; /* blue-50 */
         }
         .tab-button {
             padding: 0.75rem 1rem;
@@ -77,25 +77,38 @@
 <body class="text-gray-800">
 
     <!-- Cabeçalho -->
-    <header class="bg-white shadow-md sticky top-0 z-10">
+    <header class="bg-blue-100 shadow-md sticky top-0 z-10">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="py-4">
                 <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Dashboard de Manufatura</h1>
                 <p class="text-md sm:text-lg text-gray-600">Análise de Custos e Processos - Formula SAE</p>
             </div>
             <!-- Navegação por Abas -->
-            <nav class="flex border-b border-gray-200 overflow-x-auto -mb-px">
+            <nav class="flex flex-wrap border-b border-gray-200 -mb-px">
                 <button class="tab-button active" onclick="showTab('home')">Início</button>
                 <button class="tab-button" onclick="showTab('factory_layout')">Layout da Fábrica</button>
                 <button class="tab-button" onclick="showTab('factory_infra')">Infraestrutura</button>
                 <button class="tab-button" onclick="showTab('factory_costs')">Custos Operacionais</button>
-                <button class="tab-button" onclick="showTab('chassis')">Chassi</button>
-                <button class="tab-button" onclick="showTab('suspension')">Suspensão</button>
-                <button class="tab-button" onclick="showTab('drivetrain')">Transmissão</button>
-                <button class="tab-button" onclick="showTab('powertrain')">Motor</button>
-                <button class="tab-button" onclick="showTab('aero')">Aerodinâmica</button>
-                <button class="tab-button" onclick="showTab('brakes')">Freios & Ergonomia</button>
-                <button class="tab-button" onclick="showTab('electrical')">Elétrica</button>
+                
+                <!-- Botão Suspenso para Áreas -->
+                <div class="relative" id="areas-dropdown-container">
+                    <button id="areas-dropdown-button" class="tab-button flex items-center gap-1">
+                        Áreas Específicas
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="areas-dropdown-menu" class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20 hidden">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('chassis', true)">Chassi</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('suspension', true)">Suspensão</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('drivetrain', true)">Transmissão</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('powertrain', true)">Motor</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('aero', true)">Aerodinâmica</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('brakes', true)">Freios & Ergonomia</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="event.preventDefault(); showTab('electrical', true)">Elétrica</a>
+                    </div>
+                </div>
+                <button class="tab-button" onclick="showTab('interchangeability')">Intercambialidade</button>
+                <button class="tab-button" onclick="showTab('quality')">Qualidade</button>
+                <button class="tab-button" onclick="showTab('user_manual')">Orientações Gerais</button>
                 <button class="tab-button" onclick="showTab('cost_summary')">Resumo de Custos</button>
             </nav>
         </div>
@@ -229,6 +242,32 @@
                             </tbody>
                         </table>
                     </div>
+                     <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold border-b pb-2">Inventário de Maquinaria Principal</h2>
+                        <div class="overflow-x-auto max-h-96">
+                            <table class="min-w-full text-sm">
+                                <thead class="table-header">
+                                    <tr>
+                                        <th class="table-cell">Máquina</th>
+                                        <th class="table-cell">Área</th>
+                                        <th class="table-cell text-right">Custo Estimado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td class="table-cell">Célula de Solda Robotizada</td><td class="table-cell">Chassi/Suspensão</td><td class="table-cell text-right">BRL 200,000.00</td></tr>
+                                    <tr><td class="table-cell">Centro de Usinagem CNC 5-Eixos</td><td class="table-cell">Freios/Suspensão</td><td class="table-cell text-right">BRL 500,000.00</td></tr>
+                                    <tr><td class="table-cell">Torno CNC e Laser de Tubos</td><td class="table-cell">Suspensão</td><td class="table-cell text-right">BRL 350,000.00</td></tr>
+                                    <tr><td class="table-cell">Máquina de Eletroerosão a Fio (EDM)</td><td class="table-cell">Transmissão</td><td class="table-cell text-right">BRL 300,000.00</td></tr>
+                                    <tr><td class="table-cell">Forno de Tratamento Térmico</td><td class="table-cell">Transmissão</td><td class="table-cell text-right">BRL 250,000.00</td></tr>
+                                    <tr><td class="table-cell">Máquina de Medição por Coordenadas (CMM)</td><td class="table-cell">Qualidade</td><td class="table-cell text-right">BRL 180,000.00</td></tr>
+                                    <tr><td class="table-cell">Injetora de Plástico (300 ton)</td><td class="table-cell">Motor</td><td class="table-cell text-right">BRL 450,000.00</td></tr>
+                                    <tr><td class="table-cell">Autoclave</td><td class="table-cell">Aerodinâmica</td><td class="table-cell text-right">BRL 350,000.00</td></tr>
+                                    <tr><td class="table-cell">Processadora Automática de Fios</td><td class="table-cell">Elétrica</td><td class="table-cell text-right">BRL 200,000.00</td></tr>
+                                    <tr class="table-header font-bold text-base"><td class="table-cell" colspan="2">INVESTIMENTO TOTAL EM MAQUINARIA</td><td class="table-cell text-right">BRL 2,780,000.00</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-lg space-y-6">
                     <h2 class="text-xl font-bold border-b pb-2">Infraestrutura e Bem-Estar</h2>
@@ -246,13 +285,13 @@
                         <ul class="text-sm mt-2 space-y-1 list-disc list-inside text-gray-700">
                             <li>Salas de descanso climatizadas com sofás, puffs e jogos.</li>
                             <li>Sistema de exaustão industrial em toda a área de produção.</li>
-                            <li>**Casas de Banho:** 10 conjuntos (masculino/feminino) distribuídos estrategicamente: 2 no restaurante, 2 nas áreas de descanso e 6 na área de produção.</li>
-                            <li>**Bebedouros:** 10 unidades com água filtrada, seguindo a mesma lógica de distribuição das casas de banho para fácil acesso.</li>
+                            <li><span class="font-semibold">Casas de Banho:</span> 10 conjuntos (masculino/feminino) distribuídos estrategicamente: 2 no restaurante, 2 nas áreas de descanso e 6 na área de produção.</li>
+                            <li><span class="font-semibold">Bebedouros:</span> 10 unidades com água filtrada, seguindo a mesma lógica de distribuição das casas de banho para fácil acesso.</li>
                             <li>Vestiários completos para homens e mulheres.</li>
                         </ul>
                     </div>
                      <div class="bg-white rounded-xl">
-                        <h3 class="font-bold text-lg mb-4">Custos de Utilidades (Apoio)</h3>
+                        <h3 class="font-bold text-lg mb-4">Custos Mensais de Infraestrutura</h3>
                         <canvas id="infraUtilitiesChart"></canvas>
                     </div>
                 </div>
@@ -640,6 +679,149 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Seção: Intercambialidade -->
+        <div id="interchangeability" class="content-section">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-bold border-b pb-2">Intercambialidade de Peças</h2>
+                    <p class="text-sm text-gray-600 mt-2 mb-4">A padronização de componentes é uma estratégia central para reduzir a complexidade, o custo e o tempo de montagem.</p>
+                    <ul class="text-sm space-y-2 list-disc list-inside">
+                        <li><span class="font-semibold">Fixadores:</span> 80% dos parafusos são M6 ou M8, reduzindo a necessidade de múltiplas ferramentas.</li>
+                        <li><span class="font-semibold">Rolamentos:</span> Utilização do mesmo modelo de rolamento nos cubos de roda dianteiros e traseiros.</li>
+                        <li><span class="font-semibold">Conectores Elétricos:</span> Padronização da série de conectores em todo o chicote elétrico para evitar erros.</li>
+                        <li><span class="font-semibold">Terminais de Direção:</span> Peças idênticas para os lados esquerdo e direito.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-bold border-b pb-2">Flexibilidade da Maquinaria</h2>
+                    <p class="text-sm text-gray-600 mt-2 mb-4">O investimento em maquinaria versátil permite a produção de múltiplos componentes, otimizando o uso dos ativos.</p>
+                     <ul class="text-sm space-y-2 list-disc list-inside">
+                        <li><span class="font-semibold">Centro de Usinagem CNC 5-Eixos:</span> Utilizado para fabricar montantes da suspensão, pinças de freio e moldes complexos da aerodinâmica.</li>
+                        <li><span class="font-semibold">Torno CNC:</span> Produz cubos de roda, espaçadores, buchas da suspensão e eixos da transmissão.</li>
+                        <li><span class="font-semibold">Corte a Laser:</span> Usado para cortar chapas da caixa de pedais e suportes diversos, além dos tubos do chassi.</li>
+                        <li><span class="font-semibold">Robô de Solda:</span> Programa ajustável para soldar tanto o chassi principal como as bandejas da suspensão.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Qualidade -->
+        <div id="quality" class="content-section">
+             <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-bold text-gray-900 border-b pb-3">Estratégias de Qualidade e Facilidade de Manufatura</h2>
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-700">Prevenção de Defeitos (Poka-Yoke)</h3>
+                        <p class="mt-2 text-sm text-gray-600">Implementamos sistemas "à prova de erro" para eliminar a possibilidade de falhas humanas durante a montagem.</p>
+                        <ul class="mt-3 text-sm list-disc list-inside space-y-2">
+                            <li><span class="font-semibold">Montagem Assimétrica:</span> Componentes críticos, como suportes de pinça de freio, possuem furos ou guias assimétricas que impedem a montagem na posição errada.</li>
+                            <li><span class="font-semibold">Gabaritos Dedicados:</span> A soldagem do chassi e das bandejas é feita em gabaritos que só permitem o encaixe correto das peças, garantindo a geometria.</li>
+                            <li><span class="font-semibold">Conectores Codificados:</span> Conectores elétricos de diferentes sistemas possuem formas e cores únicas, tornando impossível a ligação cruzada.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-700">Controlo de Processo e Rastreabilidade</h3>
+                        <p class="mt-2 text-sm text-gray-600">Utilizamos ferramentas digitais e de automação para monitorizar e registar cada passo da produção.</p>
+                        <ul class="mt-3 text-sm list-disc list-inside space-y-2">
+                            <li><span class="font-semibold">Torque Controlado:</span> Todas as ferramentas de aperto críticas são digitais e programadas com o torque exato, registando cada operação.</li>
+                            <li><span class="font-semibold">Inspeção Automatizada:</span> Sistemas de visão computacional verificam a presença e a orientação correta de componentes, enquanto a máquina CMM valida 100% das dimensões críticas das peças usinadas.</li>
+                            <li><span class="font-semibold">Rastreabilidade Digital (MES):</span> Cada componente principal recebe um número de série. O nosso Sistema de Execução de Manufatura (MES) rastreia qual peça foi para qual carro, quem a montou e os resultados dos seus testes de qualidade.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Manual do Utilizador -->
+        <div id="user_manual" class="content-section">
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-bold text-gray-900 border-b pb-3">Orientações Gerais</h2>
+                <p class="mt-4 text-gray-600">Bem-vindo ao manual de orientações gerais do seu carro FEB RACING, modelo FR-10. Estas orientações são essenciais para manter o seu carro em condições saudáveis e seguras, tanto para o utilizador como para a sociedade, além de garantir o desempenho e a longevidade do veículo.</p>
+                <div class="mt-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h3 class="text-lg font-semibold text-blue-700">Plano de Manutenção Geral</h3>
+                    <div class="mt-2 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div>
+                            <h4 class="font-bold">A cada 2 usos extremos (pista)</h4>
+                            <ul class="list-disc list-inside">
+                                <li>Inspeção visual completa do chassi e suspensão.</li>
+                                <li>Reaperto de todos os parafusos críticos.</li>
+                                <li>Verificação de pastilhas e fluido de freio.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold">A cada 20km de uso leve</h4>
+                             <ul class="list-disc list-inside">
+                                <li>Verificação da tensão e lubrificação da corrente.</li>
+                                <li>Inspeção de níveis de fluidos (óleo, arrefecimento).</li>
+                                <li>Verificação da pressão dos pneus.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold">A cada 6 meses (pouco uso)</h4>
+                             <ul class="list-disc list-inside">
+                                <li>Troca de todos os fluidos (freio, óleo, arrefecimento).</li>
+                                <li>Carga completa da bateria.</li>
+                                <li>Inspeção geral de borrachas e vedantes.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mt-8 mb-4">Verificações Específicas por Área</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h3 class="text-lg font-semibold text-blue-700">Chassi & Aerodinâmica</h3>
+                        <ul class="mt-2 text-sm list-disc list-inside space-y-1">
+                            <li><span class="font-semibold">Inspeção:</span> Após cada 2 eventos, inspecionar visualmente todas as soldas do chassi por fissuras.</li>
+                            <li><span class="font-semibold">Limpeza:</span> Limpar componentes de fibra de carbono apenas com água e pano de microfibra.</li>
+                            <li><span class="font-semibold">Fixadores:</span> Verificar o aperto dos parafusos de 1/4 de volta (Southco) do bico antes de cada utilização.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h3 class="text-lg font-semibold text-blue-700">Suspensão</h3>
+                        <ul class="mt-2 text-sm list-disc list-inside space-y-1">
+                            <li><span class="font-semibold">Alinhamento:</span> Verificar o alinhamento das rodas a cada 4 eventos ou após qualquer contacto.</li>
+                            <li><span class="font-semibold">Aperto:</span> Verificar o torque dos parafusos das bandejas e montantes antes de cada dia de pista.</li>
+                            <li><span class="font-semibold">Limpeza:</span> Manter os terminais rotulares (rod ends) limpos e lubrificados.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h3 class="text-lg font-semibold text-blue-700">Transmissão & Motor</h3>
+                        <ul class="mt-2 text-sm list-disc list-inside space-y-1">
+                            <li><span class="font-semibold">Corrente:</span> Verificar a tensão e lubrificar a corrente antes de cada utilização.</li>
+                            <li><span class="font-semibold">Fluidos:</span> Verificar o nível do óleo do motor e do líquido de arrefecimento com o motor frio.</li>
+                            <li><span class="font-semibold">Filtro de Ar:</span> Inspecionar e limpar o filtro de ar a cada 4 eventos.</li>
+                            <li><span class="font-semibold">Vazamentos:</span> Inspecionar visualmente por vazamentos de óleo ou líquido de arrefecimento após o uso.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h3 class="text-lg font-semibold text-blue-700">Freios & Ergonomia</h3>
+                        <ul class="mt-2 text-sm list-disc list-inside space-y-1">
+                            <li><span class="font-semibold">Fluido de Freio:</span> Verificar o nível do fluido no reservatório antes de cada utilização.</li>
+                            <li><span class="font-semibold">Sangramento:</span> Sangrar o sistema de freios se o pedal parecer esponjoso.</li>
+                            <li><span class="font-semibold">Pastilhas:</span> Inspecionar o desgaste das pastilhas de freio a cada 2 eventos.</li>
+                            <li><span class="font-semibold">Cintos:</span> Verificar a integridade dos cintos de segurança e a validade antes de cada evento.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h3 class="text-lg font-semibold text-blue-700">Sistema Elétrico</h3>
+                        <ul class="mt-2 text-sm list-disc list-inside space-y-1">
+                            <li><span class="font-semibold">Bateria:</span> Manter a bateria totalmente carregada. Desconectar o polo negativo se o carro for ficar parado por mais de uma semana.</li>
+                            <li><span class="font-semibold">Conexões:</span> Verificar se todos os conectores principais estão bem encaixados e sem corrosão.</li>
+                            <li><span class="font-semibold">Fusíveis:</span> Manter um kit de fusíveis de reserva. Se um fusível queimar, substitua por um de mesma amperagem.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                        <h3 class="text-lg font-semibold text-red-700">Soluções Gerais</h3>
+                        <ul class="mt-2 text-sm list-disc list-inside space-y-1">
+                            <li><span class="font-semibold">Vibrações:</span> Se sentir uma vibração anormal, pare e verifique o aperto das rodas e a integridade da suspensão.</li>
+                            <li><span class="font-semibold">Superaquecimento:</span> Se a temperatura do motor subir acima do normal, pare imediatamente e verifique o nível do líquido de arrefecimento e a ventoinha.</li>
+                            <li><span class="font-semibold">Falha Elétrica:</span> Se o carro desligar subitamente, verifique o disjuntor principal e os fusíveis.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Seção: Resumo de Custos -->
         <div id="cost_summary" class="content-section">
@@ -653,7 +835,7 @@
                     <canvas id="totalBreakdownChart"></canvas>
                 </div>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-lg mt-8">
+             <div class="bg-white p-6 rounded-xl shadow-lg mt-8">
                 <h2 class="text-xl font-bold mb-4 text-center">Projeção de Custos Totais da Empresa</h2>
                  <canvas id="annualCostChart"></canvas>
             </div>
@@ -667,20 +849,36 @@
 
     <script>
         // --- Lógica para as Abas ---
-        function showTab(tabName) {
-            const sections = document.querySelectorAll('.content-section');
-            sections.forEach(section => {
+        function showTab(tabName, isAreaTab = false) {
+            document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.remove('active');
             });
-            document.getElementById(tabName).classList.add('active');
+            const targetSection = document.getElementById(tabName);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
 
-            const buttons = document.querySelectorAll('.tab-button');
-            buttons.forEach(button => {
+            document.querySelectorAll('.tab-button').forEach(button => {
                 button.classList.remove('active');
-                if (button.getAttribute('onclick') === `showTab('${tabName}')`) {
-                    button.classList.add('active');
-                }
             });
+
+            if (isAreaTab) {
+                const dropdownButton = document.getElementById('areas-dropdown-button');
+                if (dropdownButton) {
+                    dropdownButton.classList.add('active');
+                }
+            } else {
+                const targetButton = Array.from(document.querySelectorAll('.tab-button')).find(
+                    btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`showTab('${tabName}')`)
+                );
+                if (targetButton) {
+                    targetButton.classList.add('active');
+                }
+            }
+            const dropdownMenu = document.getElementById('areas-dropdown-menu');
+            if (dropdownMenu) {
+                dropdownMenu.classList.add('hidden');
+            }
         }
 
         // --- Lógica para os Gráficos ---
@@ -771,7 +969,7 @@
                 labels: ['Mensal', 'Semestral', 'Anual'],
                  datasets: [{
                     label: 'Custo Total da Empresa',
-                    data: [578712.10, 3472272.60, 6944545.20],
+                    data: [549180.35, 3295082.1, 6590164.2], // Custo de 25 protótipos + custos operacionais mensais
                     backgroundColor: ['#22c55e', '#f97316', '#ef4444']
                 }]
             };
@@ -796,8 +994,8 @@
              createChart('infraUtilitiesChart', {
                 type: 'bar',
                 data: {
-                    labels: ['Energia (Apoio)', 'Água'],
-                    datasets: [{ data: [2992.00, 930.00], backgroundColor: ['#f59e0b', '#3b82f6'] }]
+                    labels: ['Subsídio Restaurante', 'Energia (Apoio)', 'Água'],
+                    datasets: [{ data: [24205.00, 2992.00, 930.00], backgroundColor: ['#10b981', '#f59e0b', '#3b82f6'] }]
                 },
                 options: componentBarChartOptions
             });
@@ -880,6 +1078,23 @@
                     datasets: [{ data: [2000.00, 312.50, 80.00, 10.20], backgroundColor: ['#10b981', '#3b82f6', '#f97316', '#f59e0b'] }]
                 },
                 options: componentBarChartOptions
+            });
+
+            // Lógica do botão suspenso
+            const dropdownButton = document.getElementById('areas-dropdown-button');
+            const dropdownMenu = document.getElementById('areas-dropdown-menu');
+
+            if (dropdownButton) {
+                dropdownButton.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    dropdownMenu.classList.toggle('hidden');
+                });
+            }
+
+            window.addEventListener('click', function(event) {
+                if (dropdownButton && !dropdownButton.contains(event.target)) {
+                    dropdownMenu.classList.add('hidden');
+                }
             });
 
         });
